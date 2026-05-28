@@ -30,6 +30,31 @@ export class LogsService {
 
     const embedding = embeddingResponse.embedding;
 
-    return this.vectorService.searchSimilarLogs(embedding);
+    const results = await this.vectorService.searchSimilarLogs(embedding);
+
+    const documents = results.documents?.[0] || [];
+
+    const distances = results.distances?.[0] || [];
+
+    const formatted = documents
+      .map((document, index) => ({
+        text: document,
+        distance: distances[index],
+        similarity: (1 - (distances?.[index] ?? 0)).toFixed(4),
+      }))
+      .filter((item) => Number(item.similarity) < 260);
+
+    if (!formatted.length) {
+      return {
+        query,
+        message: 'No relevant logs found.',
+        results: [],
+      }
+    }
+
+    return {
+      query,
+      results: formatted,
+    };
   }
 }

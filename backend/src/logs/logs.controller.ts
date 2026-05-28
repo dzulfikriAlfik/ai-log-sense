@@ -13,6 +13,12 @@ export class LogsController {
 
   @Post('search')
   async search(@Body() body: { query: string }) {
+    if (!body.query || body.query.trim().length < 3) {
+      return {
+        message: 'Query must contain at least 3 characters.',
+      };
+    }
+
     return this.logsService.searchLogs(body.query);
   }
 }
