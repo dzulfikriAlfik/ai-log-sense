@@ -42,7 +42,7 @@ export class LogsService {
         distance: distances[index],
         similarity: (1 - (distances?.[index] ?? 0)).toFixed(4),
       }))
-      .filter((item) => Number(item.similarity) < 260);
+      .filter((item) => Math.abs(Number(item.distance)) < 500);
 
     if (!formatted.length) {
       return {
