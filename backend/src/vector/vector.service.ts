@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ChromaClient } from 'chromadb';
 
 @Injectable()
 export class VectorService {
   private client: ChromaClient;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    const chromaBaseUrl = this.configService.get<string>('CHROMA_DB_BASE_URL');
+
     this.client = new ChromaClient({
-      path: 'http://localhost:8000',
+      path: chromaBaseUrl,
     });
   }
 
