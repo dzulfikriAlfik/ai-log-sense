@@ -6,8 +6,13 @@ import { LogsService } from './logs.service';
 export class LogsController {
   constructor(private readonly logsService: LogsService) {}
 
-  @Post('embedding')
-  async embedding(@Body() body: { text: string }) {
-    return this.logsService.testEmbedding(body.text);
+  @Post('add')
+  async addLog(@Body() body: { text: string }) {
+    return this.logsService.addLog(body.text);
+  }
+
+  @Post('search')
+  async search(@Body() body: { query: string }) {
+    return this.logsService.searchLogs(body.query);
   }
 }
