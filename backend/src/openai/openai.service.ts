@@ -50,4 +50,23 @@ export class OpenaiService {
 
     return response.choices[0].message.content;
   }
+
+  async generateIncidentSummary(incidents: string[]) {
+    const response = await this.client.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      temperature: 0.2,
+      messages: [
+        {
+          role: 'system',
+          content: 'Summarize operational incident patterns.',
+        },
+        {
+          role: 'user',
+          content: incidents.join('\n'),
+        },
+      ],
+    });
+
+    return response.choices[0].message.content;
+  }
 }

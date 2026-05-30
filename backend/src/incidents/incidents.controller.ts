@@ -9,4 +9,14 @@ export class IncidentsController {
   findAll() {
     return this.incidentsService.findAll();
   }
+
+  @Get('timeline')
+  getTimeline() {
+    return this.incidentsService.getTimeline();
+  }
+
+  @Get('summary')
+  async getSummary() {
+    return this.incidentsService.generateSummary();
+  }
 }
