@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { OllamaService } from '../ollama/ollama.service';
 import { VectorService } from 'src/vector/vector.service';
 import { OpenaiService } from 'src/openai/openai.service';
+import { IncidentsService } from 'src/incidents/incidents.service';
 
 @Injectable()
 export class LogsService {
@@ -10,6 +11,7 @@ export class LogsService {
     private readonly ollamaService: OllamaService,
     private readonly vectorService: VectorService,
     private readonly openaiService: OpenaiService,
+    private readonly incidentsService: IncidentsService,
   ) {}
 
   async addLog(text: string) {
@@ -78,10 +80,19 @@ export class LogsService {
       };
     }
 
-    const analysis = await this.openaiService.generateIncidentAnalysis(
+    const analysis =
+      (await this.openaiService.generateIncidentAnalysis(query, logs)) ??
+      'No analysis generated.';
+
+    const incident = {
+      id: crypto.randomUUID(),
       query,
-      logs,
-    );
+      retrievedLogs: logs,
+      analysis,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.incidentsService.save(incident);
 
     return {
       query,
