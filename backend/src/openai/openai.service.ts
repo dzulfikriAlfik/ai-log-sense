@@ -48,8 +48,6 @@ export class OpenaiService {
       ],
     });
 
-    console.log("generateIncidentAnalysis", {query, logs, response});
-
     return response.choices[0].message.content;
   }
 }

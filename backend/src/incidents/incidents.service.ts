@@ -10,4 +10,12 @@ export class IncidentsService {
   findAll() {
     return incidents;
   }
+
+  findSimilar(query: string) {
+    return incidents.filter(
+      (incident) =>
+        incident.query.toLowerCase().includes(query.toLowerCase()) ||
+        query.toLowerCase().includes(incident.query.toLowerCase()),
+    );
+  }
 }

@@ -84,6 +84,8 @@ export class LogsService {
       (await this.openaiService.generateIncidentAnalysis(query, logs)) ??
       'No analysis generated.';
 
+    const similarIncidents = this.incidentsService.findSimilar(query);
+
     const incident = {
       id: crypto.randomUUID(),
       query,
@@ -98,6 +100,7 @@ export class LogsService {
       query,
       retrievedLogs: logs,
       analysis,
+      similarIncidents,
     };
   }
 }
