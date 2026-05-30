@@ -4,6 +4,7 @@ import { OllamaService } from '../ollama/ollama.service';
 import { VectorService } from 'src/vector/vector.service';
 import { OpenaiService } from 'src/openai/openai.service';
 import { IncidentsService } from 'src/incidents/incidents.service';
+import { VECTOR_COLLECTIONS } from 'src/vector/vector.constants';
 
 @Injectable()
 export class LogsService {
@@ -21,7 +22,7 @@ export class LogsService {
 
     const id = crypto.randomUUID();
 
-    await this.vectorService.addLogEmbedding('logsense_logs', id, text, embedding);
+    await this.vectorService.addLogEmbedding(VECTOR_COLLECTIONS.LOGS, id, text, embedding);
 
     return {
       id,
@@ -34,7 +35,7 @@ export class LogsService {
 
     const embedding = embeddingResponse.embedding;
 
-    return this.vectorService.searchSimilarLogs('logsense_logs', embedding);
+    return this.vectorService.searchSimilarLogs(VECTOR_COLLECTIONS.LOGS, embedding);
   }
 
   async searchLogs(query: string) {
@@ -84,7 +85,7 @@ export class LogsService {
       (await this.openaiService.generateIncidentAnalysis(query, logs)) ??
       'No analysis generated.';
 
-    const similarIncidents = this.incidentsService.findSimilar(query);
+    const similarIncidents = await this.incidentsService.findSemanticSimilar(query);
 
     const incident = {
       id: crypto.randomUUID(),
@@ -94,7 +95,7 @@ export class LogsService {
       createdAt: new Date().toISOString(),
     };
 
-    this.incidentsService.save(incident);
+    await this.incidentsService.save(incident);
 
     return {
       query,
