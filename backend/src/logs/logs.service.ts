@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 
 import { OllamaService } from '../ollama/ollama.service';
 import { VectorService } from 'src/vector/vector.service';
+import { OpenaiService } from 'src/openai/openai.service';
 
 @Injectable()
 export class LogsService {
   constructor(
     private readonly ollamaService: OllamaService,
     private readonly vectorService: VectorService,
+    private readonly openaiService: OpenaiService,
   ) {}
 
   async addLog(text: string) {
@@ -21,16 +23,20 @@ export class LogsService {
 
     return {
       id,
-      text
+      text,
     };
   }
 
-  async searchLogs(query: string) {
+  private async retrieveRelevantLogs(query: string) {
     const embeddingResponse = await this.ollamaService.generateEmbedding(query);
 
     const embedding = embeddingResponse.embedding;
 
-    const results = await this.vectorService.searchSimilarLogs(embedding);
+    return this.vectorService.searchSimilarLogs(embedding);
+  }
+
+  async searchLogs(query: string) {
+    const results = await this.retrieveRelevantLogs(query);
 
     const documents = results.documents?.[0] || [];
 
@@ -49,12 +55,38 @@ export class LogsService {
         query,
         message: 'No relevant logs found.',
         results: [],
-      }
+      };
     }
 
     return {
       query,
       results: formatted,
+    };
+  }
+
+  async analyzeIncident(query: string) {
+    const searchResults = await this.retrieveRelevantLogs(query);
+
+    const logs =
+      searchResults.documents?.[0]?.filter(
+        (document): document is string => document !== null,
+      ) ?? [];
+
+    if (!logs.length) {
+      return {
+        message: 'No relevant logs found.',
+      };
+    }
+
+    const analysis = await this.openaiService.generateIncidentAnalysis(
+      query,
+      logs,
+    );
+
+    return {
+      query,
+      retrievedLogs: logs,
+      analysis,
     };
   }
 }

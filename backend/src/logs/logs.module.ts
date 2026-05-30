@@ -3,11 +3,13 @@ import { LogsController } from './logs.controller';
 import { LogsService } from './logs.service';
 import { OllamaModule } from 'src/ollama/ollama.module';
 import { VectorModule } from 'src/vector/vector.module';
+import { OpenaiModule } from 'src/openai/openai.module';
 
 @Module({
   imports: [
     OllamaModule,
-    VectorModule
+    VectorModule,
+    OpenaiModule
   ],
   controllers: [LogsController],
   providers: [LogsService],

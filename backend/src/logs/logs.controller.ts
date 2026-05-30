@@ -21,4 +21,9 @@ export class LogsController {
 
     return this.logsService.searchLogs(body.query);
   }
+
+  @Post('analyze')
+  async analyze(@Body() body: { query: string }) {
+    return this.logsService.analyzeIncident(body.query);
+  }
 }
