@@ -21,7 +21,7 @@ export class LogsService {
 
     const id = crypto.randomUUID();
 
-    await this.vectorService.addLogEmbedding(id, text, embedding);
+    await this.vectorService.addLogEmbedding('logsense_logs', id, text, embedding);
 
     return {
       id,
@@ -34,7 +34,7 @@ export class LogsService {
 
     const embedding = embeddingResponse.embedding;
 
-    return this.vectorService.searchSimilarLogs(embedding);
+    return this.vectorService.searchSimilarLogs('logsense_logs', embedding);
   }
 
   async searchLogs(query: string) {

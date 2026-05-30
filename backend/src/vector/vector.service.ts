@@ -14,14 +14,19 @@ export class VectorService {
     });
   }
 
-  async getCollection() {
+  async getCollection(collectionName: string) {
     return this.client.getOrCreateCollection({
-      name: 'logsense_logs',
+      name: collectionName,
     });
   }
 
-  async addLogEmbedding(id: string, log: string, embedding: number[]) {
-    const collection = await this.getCollection();
+  async addLogEmbedding(
+    collectionName: string,
+    id: string,
+    log: string,
+    embedding: number[]
+  ) {
+    const collection = await this.getCollection(collectionName);
 
     await collection.add({
       ids: [id],
@@ -30,8 +35,8 @@ export class VectorService {
     });
   }
 
-  async searchSimilarLogs(embedding: number[]) {
-    const collection = await this.getCollection();
+  async searchSimilarLogs(collectionName: string, embedding: number[]) {
+    const collection = await this.getCollection(collectionName);
 
     return collection.query({
       queryEmbeddings: [embedding],
