@@ -7,7 +7,7 @@ export class VectorService {
   private client: ChromaClient;
 
   constructor(private readonly configService: ConfigService) {
-    const chromaBaseUrl = this.configService.get<string>('CHROMA_DB_BASE_URL');
+    const chromaBaseUrl = this.configService.get<string>('chromaDbBaseUrl');
 
     this.client = new ChromaClient({
       path: chromaBaseUrl,

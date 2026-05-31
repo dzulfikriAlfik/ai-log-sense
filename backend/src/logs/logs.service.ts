@@ -6,6 +6,8 @@ import { OpenaiService } from 'src/openai/openai.service';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { VECTOR_COLLECTIONS } from 'src/vector/vector.constants';
 import { dummyLogs } from './logs.seed';
+import { logs } from './logs.store';
+import { dummyIncidentQueries } from 'src/incidents/incidents.seed';
 
 @Injectable()
 export class LogsService {
@@ -24,6 +26,11 @@ export class LogsService {
     const id = crypto.randomUUID();
 
     await this.vectorService.addLogEmbedding(VECTOR_COLLECTIONS.LOGS, id, text, embedding);
+
+    logs.push({
+      id,
+      text,
+    });
 
     return {
       id,
@@ -127,11 +134,28 @@ export class LogsService {
         id,
         log,
       });
+
+      logs.push({
+        id,
+        text: log,
+      });
     }
 
     return {
       count: inserted.length,
       inserted,
     };
+  }
+
+  async generateDummyIncidents() {
+    const inserted: { id: string; incident: string }[] = [];
+
+    for (const incident of dummyIncidentQueries) {
+      await this.analyzeIncident(incident);
+
+      inserted.push({id: crypto.randomUUID(), incident});
+    }
+
+    return inserted;
   }
 }

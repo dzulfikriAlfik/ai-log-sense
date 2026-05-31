@@ -31,4 +31,9 @@ export class LogsController {
   async seed() {
     return this.logsService.generateDummyLogs();
   }
+
+  @Post('seedIncidents')
+  async seedIncidents() {
+    return this.logsService.generateDummyIncidents();
+  }
 }

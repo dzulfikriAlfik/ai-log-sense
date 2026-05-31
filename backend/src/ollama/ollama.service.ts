@@ -7,7 +7,7 @@ export class OllamaService {
   constructor(private readonly configService: ConfigService) {}
 
   async generateEmbedding(text: string) {
-    const baseUrl = this.configService.get<string>('OLLAMA_BASE_URL');
+    const baseUrl = this.configService.get<string>('ollamaBaseUrl');
 
     const response = await fetch(`${baseUrl}/api/embeddings`, {
       method: 'POST',

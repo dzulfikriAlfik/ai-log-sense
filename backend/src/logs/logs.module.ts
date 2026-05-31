@@ -15,5 +15,6 @@ import { IncidentsModule } from 'src/incidents/incidents.module';
   ],
   controllers: [LogsController],
   providers: [LogsService],
+  exports: [LogsService]
 })
 export class LogsModule {}

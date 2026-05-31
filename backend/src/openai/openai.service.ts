@@ -7,17 +7,22 @@ import OpenAI from 'openai';
 @Injectable()
 export class OpenaiService {
   private client: OpenAI;
+  private openaiModel: string;
+  private openaiTemperature: number;
 
   constructor(private readonly configService: ConfigService) {
     this.client = new OpenAI({
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
+      apiKey: this.configService.get<string>('openaiApiKey'),
     });
+
+    this.openaiModel = this.configService.get<string>('openaiModel') ?? 'gpt-4.1-mini';
+    this.openaiTemperature = this.configService.get<number>('openaiTemperature') ?? 0.2;
   }
 
   async generateIncidentAnalysis(query: string, logs: string[]) {
     const response = await this.client.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      temperature: 0.2,
+      model: this.openaiModel,
+      temperature: this.openaiTemperature,
       messages: [
         {
           role: 'system',
@@ -53,8 +58,8 @@ export class OpenaiService {
 
   async generateIncidentSummary(incidents: string[]) {
     const response = await this.client.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      temperature: 0.2,
+      model: this.openaiModel,
+      temperature: this.openaiTemperature,
       messages: [
         {
           role: 'system',
