@@ -5,13 +5,14 @@ import { ChromaClient } from 'chromadb';
 @Injectable()
 export class VectorService {
   private client: ChromaClient;
+  private vectorSearchLimit: number;
 
   constructor(private readonly configService: ConfigService) {
-    const chromaBaseUrl = this.configService.get<string>('chromaDbBaseUrl');
-
     this.client = new ChromaClient({
-      path: chromaBaseUrl,
+      path: this.configService.get<string>('chromaDbBaseUrl'),
     });
+
+    this.vectorSearchLimit = this.configService.get<number>('vectorSearchLimit') ?? 3;
   }
 
   async getCollection(collectionName: string) {
@@ -40,7 +41,7 @@ export class VectorService {
 
     return collection.query({
       queryEmbeddings: [embedding],
-      nResults: 3,
+      nResults: this.vectorSearchLimit,
       include: [
         'documents',
         'distances',
