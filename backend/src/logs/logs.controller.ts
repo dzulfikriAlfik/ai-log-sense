@@ -26,4 +26,9 @@ export class LogsController {
   async analyze(@Body() body: { query: string }) {
     return this.logsService.analyzeIncident(body.query);
   }
+
+  @Post('seed')
+  async seed() {
+    return this.logsService.generateDummyLogs();
+  }
 }

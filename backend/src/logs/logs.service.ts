@@ -5,6 +5,7 @@ import { VectorService } from 'src/vector/vector.service';
 import { OpenaiService } from 'src/openai/openai.service';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { VECTOR_COLLECTIONS } from 'src/vector/vector.constants';
+import { dummyLogs } from './logs.seed';
 
 @Injectable()
 export class LogsService {
@@ -102,6 +103,35 @@ export class LogsService {
       retrievedLogs: logs,
       analysis,
       similarIncidents,
+    };
+  }
+
+  async generateDummyLogs() {
+    const inserted: { id: string; log: string }[] = [];
+
+    for (const log of dummyLogs) {
+      const embeddingResponse = await this.ollamaService.generateEmbedding(log);
+
+      const embedding = embeddingResponse.embedding;
+
+      const id = crypto.randomUUID();
+
+      await this.vectorService.addLogEmbedding(
+        VECTOR_COLLECTIONS.LOGS,
+        id,
+        log,
+        embedding,
+      );
+
+      inserted.push({
+        id,
+        log,
+      });
+    }
+
+    return {
+      count: inserted.length,
+      inserted,
     };
   }
 }
