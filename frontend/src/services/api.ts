@@ -1,34 +1,49 @@
-import { API_ENDPOINTS } from "../config/api.config";
-import type { AnalyzeIncidentRequest, AnalyzeIncidentResponse } from "../types/incident";
+import { API_CONFIG, API_ENDPOINTS, API_HEADERS } from "../config/api.config";
+
+import type {
+  AnalyzeIncidentRequest,
+  AnalyzeIncidentResponse,
+  Incident,
+} from "../types/incident";
 import type { Metrics } from "../types/metrics";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+async function buildHttpErrorMessage(response: Response): Promise<string> {
+  const responseText = await response.text();
 
-export async function getMetrics(): Promise<Metrics> {
-  const response = await fetch(`${API_BASE_URL}/metrics`);
+  if (!responseText) {
+    return `Request failed with status ${response.status}`;
+  }
 
-  return response.json() as Promise<Metrics>;
+  return `Request failed with status ${response.status}: ${responseText}`;
 }
 
-export async function getIncidents() {
-  const response = await fetch(`${API_BASE_URL}/incidents`);
+async function requestJson<TResponse>(
+  endpoint: string,
+  init?: RequestInit,
+): Promise<TResponse> {
+  const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, init);
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(await buildHttpErrorMessage(response));
+  }
+
+  return (await response.json()) as TResponse;
+}
+
+export async function getMetrics(): Promise<Metrics> {
+  return requestJson<Metrics>(API_ENDPOINTS.METRICS);
+}
+
+export async function getIncidents(): Promise<Incident[]> {
+  return requestJson<Incident[]>(API_ENDPOINTS.INCIDENTS);
 }
 
 export async function analyzeIncident(
   payload: AnalyzeIncidentRequest,
 ): Promise<AnalyzeIncidentResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}${API_ENDPOINTS.ANALYZE_INCIDENT}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    },
-  );
-
-  return response.json() as Promise<AnalyzeIncidentResponse>;
+  return requestJson<AnalyzeIncidentResponse>(API_ENDPOINTS.ANALYZE_INCIDENT, {
+    method: "POST",
+    headers: API_HEADERS.JSON,
+    body: JSON.stringify(payload),
+  });
 }
