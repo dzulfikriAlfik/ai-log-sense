@@ -95,6 +95,8 @@ export class LogsService {
 
     const similarIncidents = await this.incidentsService.findSemanticSimilar(query);
 
+    console.log({similarIncidents})
+
     const incident = {
       id: crypto.randomUUID(),
       query,
