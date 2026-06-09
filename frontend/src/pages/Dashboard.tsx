@@ -9,6 +9,7 @@ import { analyzeIncident, getMetrics } from "../services/api";
 import type { AnalyzeIncidentResponse } from "../types/incident";
 import type { Metrics } from "../types/metrics";
 import IncidentHistoryTable from "../components/IncidentHistoryTable";
+import TimelineVisualization from "../components/TimelineVisualization";
 
 function formatLatestIncidentAt(value: string | null): string {
   if (!value) {
@@ -148,6 +149,9 @@ export default function Dashboard() {
       </section>
       <section className="mt-8">
         <IncidentHistoryTable />
+      </section>
+      <section className="mt-8">
+        <TimelineVisualization />
       </section>
     </main>
   );
